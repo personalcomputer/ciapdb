@@ -40,20 +40,20 @@ def plot_raw_topics(db):
 
   frequencies = [(t.encode('ascii', 'ignore'),c) for (t,c) in db_c.fetchall()]
 
-word_cloud = wordcloud.WordCloud(scale=1, width=CHART_SIZE[0], height=CHART_SIZE[1]).generate_from_frequencies(frequencies)
-fig = plt.figure(**FIGURE_SIZE)
-fig_ax = plt.Axes(fig, [0., 0., 1., 1.])
-fig_ax.set_axis_off()
-fig.add_axes(fig_ax)
-fig_ax.imshow(word_cloud)
-fig.savefig(os.path.join(CHARTS_DIR,'raw-topics-cloud.png'))
+  word_cloud = wordcloud.WordCloud(font_path='/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', background_color='white', scale=1, width=CHART_SIZE[0], height=CHART_SIZE[1]).generate_from_frequencies(frequencies)
+  fig = plt.figure(**FIGURE_SIZE)
+  fig_ax = plt.Axes(fig, [0., 0., 1., 1.])
+  fig_ax.set_axis_off()
+  fig.add_axes(fig_ax)
+  fig_ax.imshow(word_cloud)
+  fig.savefig(os.path.join(CHARTS_DIR,'raw-topics-cloud.png'))
 
   '''for topic in frequencies():
 
   .reindex(monthly_index_extra_years, fill_value=0)
   hist = pd.DataFrame({})'''
 
-  monthly_frequencies = []
+  indexed_frequencies = []
 
   index_to_use = monthly_index
 
@@ -62,7 +62,7 @@ fig.savefig(os.path.join(CHARTS_DIR,'raw-topics-cloud.png'))
       start_d = date
       end_d = index_to_use[i+1]
       db_c.execute('WITH cte AS (SELECT count(*) as c,topic FROM topics_raw LEFT JOIN briefs ON topics_raw.doc_number=briefs.doc_number WHERE briefs.pub_date BETWEEN ? AND ? GROUP BY topic) SELECT c,topic FROM cte ORDER BY c DESC', (start_d, end_d))
-      monthly_frequencies.append(db_c.fetchall())
+      indexed_frequencies.append(db_c.fetchall())
     except IndexError:
       break
 
@@ -70,35 +70,23 @@ fig.savefig(os.path.join(CHARTS_DIR,'raw-topics-cloud.png'))
 
   topics_monthly_pop = pd.DataFrame({},index=index_to_use, columns=top_topics).fillna(0)
 
-  for i,topics in enumerate(monthly_frequencies):
+  os.system('mkdir -p topics-gif')
+  for i,topics in enumerate(indexed_frequencies):
     for freq,topic in topics:
       if topic in top_topics:
         topics_monthly_pop[topic][index_to_use[i]] = freq
-    #word_cloud = wordcloud.WordCloud(max_font_size=40, scale=.5).generate_from_frequencies(topics)
-    #plt.figure()
-    #plt.imshow(word_cloud)
-    #plt.axis("off")
-    #plt.savefig(os.path.join(CHARTS_DIR,'raw-topics-cloud-'+str(index_to_use[i])+'.png'))
-    plot_data = topics_monthly_pop.loc[index_to_use[i]]
-    fig = plt.figure(figsize=(895/100.0, 1200/100.0), dpi=100)
-    fig_ax = fig.add_subplot(1, 1, 1)
-    fig_ax.set_title('Top Topics')
-    fig_ax.set_xlim([0,50])
-    #plot_data.plot(kind='barh')
-    alt_index = range(len(plot_data.index))
-    fig_ax.barh(alt_index, plot_data)
-    fig_ax.set_yticks(alt_index)
-    fig_ax.set_yticklabels(plot_data.index)
-    fig.suptitle(index_to_use[i].strftime('%Y-%m'))
-    fig.savefig(os.path.join(CHARTS_DIR,'topics-gif','topics-'+str(i).zfill(3)+'.png'))
-    plt.close(fig)
-
-    #fig = plt.figure(**FIGURE_SIZE)
-  #fig_ax = fig.add_subplot(1, 1, 1)
-  #fig_ax.set_title('Top Topics')
-  #fig_ax.plot(topics_monthly_pop.index, pdb_hist.mi_count, '-', label='The President\'s Daily Brief')
-  #fig_ax.legend(loc='center right')
-  #fig.savefig(os.path.join(CHARTS_DIR,'publication-frequency-1.png'))
+    # plot_data = topics_monthly_pop.loc[index_to_use[i]]
+    # fig = plt.figure(figsize=(895/100.0, 1200/100.0), dpi=100)
+    # fig_ax = fig.add_subplot(1, 1, 1)
+    # fig_ax.set_title('Top Topics')
+    # fig_ax.set_xlim([0,50])
+    # alt_index = range(len(plot_data.index))
+    # fig_ax.barh(alt_index, plot_data)
+    # fig_ax.set_yticks(alt_index)
+    # fig_ax.set_yticklabels(plot_data.index)
+    # fig.suptitle(index_to_use[i].strftime('%Y-%m'))
+    # fig.savefig(os.path.join(CHARTS_DIR,'topics-gif','topics-'+str(i).zfill(3)+'.png'))
+    # plt.close(fig)
 
 
 def plot_countries(db):

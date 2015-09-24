@@ -20,17 +20,24 @@ US_HOLIDAYS = holidays.US()
 BRIEFS_START = datetime.date(year=1961,month=06,day=17)
 BRIEFS_END = datetime.date(year=1969,month=01,day=20)
 
+
+yearly_index = []
+
 #I'm unimpressed with pd.daterange()!
 #How do I do this using a list comprehension?
 monthly_index_extra_years = []
-for i in range(1961,1970):
+for i in range(1961,1969+1):
+  yearly_index.append(datetime.date(year=i,month=01,day=01))
   for i2 in range(1,12+1):
     monthly_index_extra_years.append(datetime.date(year=i,month=i2,day=01))
 
 monthly_index = []
+quarterly_index = []
 i = datetime.date(BRIEFS_START.year, BRIEFS_START.month, 01)
 while i < datetime.date(BRIEFS_END.year, BRIEFS_END.month+1, 01):
   monthly_index.append(i)
+  if (i.month-1)%4 == 0:
+    quarterly_index.append(i)
   last_month = i.month
   while i.month == last_month: #can't increment by months delta and days of the month varies, so here is a bruteforce solution.
     i += datetime.timedelta(days=1)

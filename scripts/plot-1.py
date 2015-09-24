@@ -74,7 +74,7 @@ def plot_freq(db):
 
 
 def plot_density(db):
-  '''pdb_densities = pd.read_sql_query('SELECT strftime("%Y-%m",pub_date) AS date, SUM(page_count)/COUNT(*) AS avg_pages FROM briefs WHERE brief_name LIKE "THE PRESIDENT\'S DAILY BRIEF%" OR brief_name LIKE "THE PRESIDENT\'S INTELLIGENCE CHECKLIST%" GROUP BY date', db)
+  pdb_densities = pd.read_sql_query('SELECT strftime("%Y-%m",pub_date) AS date, AVG(page_count) AS avg_pages FROM briefs WHERE brief_name LIKE "THE PRESIDENT\'S DAILY BRIEF%" OR brief_name LIKE "THE PRESIDENT\'S INTELLIGENCE CHECKLIST%" GROUP BY date', db)
   pdb_densities.date = pdb_densities.date.astype("datetime64")
   pdb_densities = pdb_densities.set_index('date').reindex(monthly_index, fill_value=0)
 
@@ -83,7 +83,7 @@ def plot_density(db):
   fig_ax.set_title('Average Pages Per Daily Brief')
   fig_ax.plot(pdb_densities.index, pdb_densities.avg_pages, '-')
   fig_ax.legend(loc='center right')
-  fig.savefig(os.path.join(CHARTS_DIR,'density-1.png'))'''
+  fig.savefig(os.path.join(CHARTS_DIR,'density-1.png'))
 
   pdb_densities2 = pd.read_sql_query('SELECT strftime("%Y-%m-%d",pub_date) AS date, filename, doc_number, brief_name, page_count FROM briefs WHERE brief_name LIKE "THE PRESIDENT\'S DAILY BRIEF%" OR brief_name LIKE "THE PRESIDENT\'S INTELLIGENCE CHECKLIST%" ORDER BY page_count DESC', db)
 
