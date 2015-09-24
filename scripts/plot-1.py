@@ -85,8 +85,6 @@ def plot_density(db):
   fig_ax.legend(loc='center right')
   fig.savefig(os.path.join(CHARTS_DIR,'density-1.png'))'''
 
-  sns
-
   pdb_densities2 = pd.read_sql_query('SELECT strftime("%Y-%m-%d",pub_date) AS date, filename, doc_number, brief_name, page_count FROM briefs WHERE brief_name LIKE "THE PRESIDENT\'S DAILY BRIEF%" OR brief_name LIKE "THE PRESIDENT\'S INTELLIGENCE CHECKLIST%" ORDER BY page_count DESC', db)
 
   fig = plt.figure(**FIGURE_SIZE)
